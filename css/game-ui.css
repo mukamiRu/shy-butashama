@@ -1,0 +1,286 @@
+:root {
+  --bg-color: #fce4ec;
+  --text-color: #8d6e63;
+  --accent-color: #ff88aa;
+}
+
+@font-face {
+  font-family: 'MyGameFont';
+  src: url('../fonts/hunwariusagi.ttf'); /* フォントファイルのパスを確認してください */
+}
+
+/* すべての要素にフォントを適用 */
+body, button, input, div {
+  font-family: 'MyGameFont', sans-serif !important;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #b8d8d4;
+  color: var(--text-color);
+  /* font-family の行を消すか、MyGameFont を先頭にする */
+  font-family: 'MyGameFont', sans-serif;
+}
+#frame {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 230px;
+  height: 190px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+#inner-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px dashed rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+}
+
+#bonus-msg {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 20px;
+  color: #ff6699;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+  text-shadow: 1px 1px 2px white;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  padding: 25px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hud-top {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.hud-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+#score-label {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff6699;
+  text-shadow: 1px 1px 2px white;
+  text-align: center;
+}
+
+/* ゲージのスタイル */
+#gauge {
+  width: 320px;
+  height: 20px;
+  border: 3px solid white;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+#gaugeFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffc1e3, #ff88aa);
+  transition: width 0.1s;
+}
+
+/* ゲージがいっぱいになった時のアニメーション */
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#gaugeFill.maxed {
+  background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+  background-size: 300% 300%;
+  animation: rainbow 2s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 100, 200, 0.8);
+}
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 250, 240, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#msg {
+  font-size: 26px;
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.6;
+}
+
+.sub-msg {
+  font-size: 16px;
+  color: #7a9a96;
+  margin-top: 10px;
+}
+
+.menu-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  pointer-events: auto;
+}
+
+.btn {
+  padding: 12px 25px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.btn-retry {
+  background: var(--accent-color);
+}
+
+.btn-exit {
+  background: #a8c8c4;
+}
+
+#flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* ランキング入力ボックス全体 */
+.input-box {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 25px;
+  border-radius: 20px;
+  border: 4px solid #ffaacc;
+  width: 300px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  margin-bottom: 30px;
+}
+
+.input-box-title {
+  font-size: 14px;
+  color: #ff88aa;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+  font-family: 'MyGameFont', sans-serif;
+}
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  color: #7a9a96;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  text-align: left;
+}
+
+.name-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #b8d8d4;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  transition: 0.3s;
+  font-family: 'MyGameFont', sans-serif;
+}
+
+/* 保存ボタン */
+#saveBtn {
+  width: 100%;
+  background: #ff88aa;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #e67e9f;
+  transition: 0.1s;
+}
+
+#saveBtn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #e67e9f;
+}
+
+/* 終了後のサブボタン（もういちど遊ぶ / タイトルへ） */
+.btn-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.btn-sub {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+  outline: none;
+  font-family: 'MyGameFont', sans-serif;
+}
+
+.btn-retry-sub {
+  background: #e8f4f2;
+  color: #7a9a96;
+  border: 2px solid #b8d8d4;
+}
+
+.btn-home-sub {
+  background: #ffffff;
+  color: #a8c8c4;
+  border: 2px solid #eee;
+}
