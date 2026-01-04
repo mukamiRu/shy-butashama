@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>てれやなぶたしゃま</title>
+    <!-- トップ画面のcssの読み込み -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <div id="container">
+        <img id="pcHowImage" src="">
+        <div id="arrowLeft" class="pc-arrow" onclick="changeHow(-1)">◀</div>
+        <div id="arrowRight" class="pc-arrow" onclick="changeHow(1)">▶</div>
+        <canvas id="gameCanvas"></canvas>
+        <!-- pc時スマホ版を案内 -->
+        <div id="pcSidePanel">
+            <p>スマホ版（AR）でも<br>遊んでほしいな。</p>
+            <img id="qrCode" src="" alt="QR Code">
+            <p class="small-text">カメラで読み取ってね</p>
+        </div>
+    </div>
+
+    <!-- ボタン操作（入力）と画面の切り替えを制御    -->
+    <script src="js/controller.js"></script>
+
+</body>
+
+</html>

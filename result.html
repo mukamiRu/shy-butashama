@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>てれやなぶたしゃまランキング</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet" />
+
+    <style>
+      /* --- 自作フォントの読み込み --- */
+      @font-face {
+        font-family: 'MyGameFont';
+        src: url('../fonts/hunwariusagi.ttf') format('truetype');
+        font-display: swap;
+      }
+
+      body {
+        /* 自作フォントを最優先に設定 */
+        font-family: 'MyGameFont', 'Zen Maru Gothic', sans-serif;
+        background-color: #b8d8d4;
+        color: #555;
+        margin: 0;
+        overflow-x: hidden;
+      }
+
+      /* ボタンや入力フォームにもフォントを適用 */
+      button, input {
+        font-family: 'MyGameFont', sans-serif;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+      .float-pig {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .rank-card-1 { border: 4px solid #ffcc00; background: #fffcf0; }
+      .rank-card-2 { border: 4px solid #94a3b8; background: #f8fafc; }
+      .rank-card-3 { border: 4px solid #b45309; background: #fff7ed; }
+
+      .medal {
+        font-size: 1.5rem;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+      }
+
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #e8f4f2; }
+      ::-webkit-scrollbar-thumb { background: #ff88aa; border-radius: 10px; }
+
+      .pig-button {
+        background: #ff88aa;
+        box-shadow: 0 4px 0 #e67e9f;
+        transition: 0.1s;
+      }
+      .pig-button:active {
+        transform: translateY(2px);
+        box-shadow: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col items-center py-6 px-4">
+
+    <header class="mb-6 text-center">
+      <h1 class="text-3xl font-bold text-[#ff6699] tracking-tighter">ぶたしゃまランキング</h1>
+      <div id="stage-display" class="inline-block mt-1 px-4 py-1 bg-white/50 rounded-full text-[#7a9a96] text-sm font-bold">読み込み中...</div>
+    </header>
+
+    <main class="w-full max-w-md">
+      <div id="error-message" class="hidden bg-white/80 border-2 border-red-300 text-red-500 px-4 py-3 rounded-2xl text-center mb-4">
+        うまく よみこめなかったよ… 😢
+      </div>
+
+      <div id="loading" class="flex flex-col items-center justify-center py-20">
+        <div class="animate-bounce text-4xl mb-4">🍎</div>
+        <p class="text-[#7a9a96] font-bold">ランキングを よんでるよ...</p>
+      </div>
+
+      <div id="content" class="hidden">
+        
+        <div class="bg-white rounded-3xl p-5 shadow-sm border-4 border-[#ff88aa] flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-xs font-bold text-[#ff88aa] uppercase mb-1">あなたの じゅんい</h2>
+            <p class="text-[10px] text-slate-400 font-bold">すごい！がんばったね！</p>
+          </div>
+          <div class="text-right">
+            <span id="your-rank-display" class="text-5xl font-black text-[#ff6699]">--</span>
+            <span class="text-lg text-[#ff88aa] font-bold ml-1">位</span>
+          </div>
+        </div>
+
+        <div class="bg-white/60 rounded-3xl p-3 shadow-inner mb-8">
+          <div id="ranking-list" class="space-y-3">
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <button id="retry-btn" class="pig-button w-full text-white font-bold py-4 rounded-2xl text-lg">
+                もういちど プレイ！
+            </button>
+            <button onclick="location.reload()" class="bg-white border-2 border-[#ff88aa] text-[#ff88aa] w-full font-bold py-3 rounded-2xl text-sm transition active:scale-95">
+              ランキングを 更新する
+          </button>
+      
+          <button onclick="location.href='index.html'" class="bg-white border-2 border-[#b8d8d4] text-[#7a9a96] w-full font-bold py-3 rounded-2xl text-sm transition active:scale-95">
+              タイトルに もどる
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API_URL = "https://qp2hp5oczs6e4k7n6a2vfuelhm0cxyqk.lambda-url.ap-northeast-1.on.aws/?stage=";
+
+      const loadingEl = document.getElementById("loading");
+      const contentEl = document.getElementById("content");
+      const errorEl = document.getElementById("error-message");
+      const rankingList = document.getElementById("ranking-list");
+      const yourRankDisplay = document.getElementById("your-rank-display");
+      const stageDisplay = document.getElementById("stage-display");
+      const retryBtn = document.getElementById("retry-btn");
+
+      const stageMap = {
+        'mobile-easy': 'スマホ版 しょきゅー',
+        'mobile-normal': 'スマホ版 ちゅーきゅー',
+        'mobile-hard': 'スマホ版 じょーきゅー',
+        'pc-easy': 'PC版 しょきゅー',
+        'pc-normal': 'PC版 ちゅーきゅー',
+        'pc-hard': 'PC版 じょーきゅー'
+      };
+
+      function escapeHtml(unsafe) {
+        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
+      function getRankStyle(rank) {
+        if (rank === 1) return 'rank-card-1';
+        if (rank === 2) return 'rank-card-2';
+        if (rank === 3) return 'rank-card-3';
+        return 'bg-white/80 border-2 border-white';
+      }
+
+      function getMedal(rank) {
+        if (rank === 1) return '<span class="medal">🥇</span>';
+        if (rank === 2) return '<span class="medal">🥈</span>';
+        if (rank === 3) return '<span class="medal">🥉</span>';
+        return `<span class="font-bold text-slate-400 ml-2">#${rank}</span>`;
+      }
+
+      async function fetchRankingData() {
+        try {
+          loadingEl.style.display = "flex";
+          contentEl.classList.add("hidden");
+          errorEl.classList.add("hidden");
+
+          const params = new URLSearchParams(window.location.search);
+          const stage = params.get('stage') || 'mobile-easy'; 
+
+          stageDisplay.textContent = stageMap[stage] || 'ひみつのステージ';
+          
+          retryBtn.onclick = () => {
+            location.href = stage + ".html";
+          };
+
+          let score = localStorage.getItem("score");
+          let name = localStorage.getItem("name");
+
+          const response = await fetch(API_URL + stage, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: name || "ななしのぶたしゃま",
+              score: score ? Number(score) : 0,
+            }),
+          });
+
+          if (!response.ok) throw new Error("API Error");
+
+          const data = await response.json();
+          yourRankDisplay.textContent = data.yourRank || "-";
+
+          rankingList.innerHTML = "";
+
+          if (data.worldRanking && data.worldRanking.length > 0) {
+            data.worldRanking.forEach((player) => {
+              const div = document.createElement("div");
+              div.className = `${getRankStyle(player.rank)} rounded-2xl p-4 flex justify-between items-center shadow-sm transition transform hover:scale-[1.01]`;
+
+              div.innerHTML = `
+                <div class="flex items-center">
+                  <div class="w-10 text-center">${getMedal(player.rank)}</div>
+                  <div class="ml-3">
+                    <div class="text-[10px] text-slate-400 font-bold leading-none">PLAYER</div>
+                    <div class="text-sm font-bold text-slate-700">${escapeHtml(player.name)}</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-[10px] text-[#ff88aa] font-bold leading-none">SCORE</div>
+                  <div class="text-lg font-black text-[#ff6699]">${player.score.toLocaleString()}</div>
+                </div>
+              `;
+              rankingList.appendChild(div);
+            });
+          } else {
+            rankingList.innerHTML = `<div class="p-8 text-center text-slate-400">まだ データがないよ</div>`;
+          }
+
+          loadingEl.style.display = "none";
+          contentEl.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+          loadingEl.style.display = "none";
+          errorEl.classList.remove("hidden");
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchRankingData);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>てれやなぶたしゃま</title>
+    
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    
+    <link rel="stylesheet" href="css/mobile-game-ui.css">
+
+    <script src="js/mobile-game-core.js?v=2"></script>
+    <script>
+        window.gameSettings.difficulty = 'normal';
+        window.gameSettings.scoreGoal = 25000;
+    </script>
+</head>
+<body>
+    <div id="screen-edge-guide" style="display: none;"></div>
+
+    <div id="start-screen" class="overlay">
+        <div class="content-box">
+            <div class="title-text">てれやなぶたしゃま<br>-　ちゅーきゅー　-</div>
+            <div class="sub-msg">がめんのなかで<br>ぶたしゃまをみまもって</div>
+            <div class="btn-group">
+                <button class="btn btn-exit" onclick="location.href='index.html'">もどる</button>
+                <button class="btn" onclick="startGame()">はじめる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="end-screen" style="display: none;">
+        <div id="end-msg">
+            <div class="time-up-text">タイムアップ！</div>
+            <div class="final-score-display">
+                <span id="final-score">0</span><span class="pts-unit"> pts</span>
+            </div>
+        </div>
+    
+        <div class="input-box">
+            <div class="input-box-title">✨ ランキングにさんかしよう ✨</div>
+            <div style="text-align: left; margin-bottom: 15px;">
+                <label for="nameInput" class="input-label">ランクイン時のおなまえ</label>
+                <input type="text" id="nameInput" placeholder="なまえをい入れね">
+            </div>
+            <input type="hidden" id="scoreInput">
+            <button id="saveBtn">ほぞんしてランキングへ</button>
+        </div>
+    
+        <div class="btn-group">
+            <button class="end-btn-home" onclick="location.href='index.html'">タイトルへ</button>
+            <button class="end-btn-retry" onclick="location.reload()">もういちど</button>
+        
+        </div>
+    </div>
+
+    <div id="hud" style="display: none;">
+        <a href="index.html" class="hud-exit-btn">×</a>
+        <div class="hud-top">のこりじかん: <span id="timeLeft">30.0</span></div>
+        <div class="hud-bottom">
+            <div id="score-label">スコア: <span id="score-val">0</span></div>
+            <div id="gauge"><div id="gaugeFill"></div></div>
+        </div>
+    </div>
+
+    <div id="center-frame" style="display: none;">
+        <div id="bonus-msg">✨ スコアボーナス ✨</div>
+    </div>
+
+    <a-scene embedded vr-mode-ui="enabled: false" arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-light type="ambient" intensity="0.8"></a-light>
+        <a-light type="directional" position="1 3 2" intensity="0.6"></a-light>
+        <a-entity camera look-controls position="0 0 0"></a-entity>
+        <a-entity gltf-model="url(glb/pig.glb)" move-world game-manager scale="0.3 0.3 0.3" position="0 0.4 -3.5"></a-entity>
+    </a-scene>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>てれやなぶたしゃま</title>
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js" } }</script>
+  <link rel="stylesheet" href="css/game-ui.css">
+
+</head>
+
+<body>
+  <div id="flash"></div>
+  <div id="hud" style="display: none;">
+    <div style="position: fixed; top: 20px; left: 20px; z-index: 10001; pointer-events: none;">
+      <div style="font-size: 14px; color: rgba(122, 154, 150, 0.7); font-weight: bold;">[Q] タイトルへ</div>
+      <div class="hud-top" style="margin: 0; pointer-events: auto;">のこりじかん: <span id="timeLeft">30.0</span></div>
+    </div>
+    <div class="hud-bottom" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10001; pointer-events: auto; width: auto;">
+      <div id="score-label">スコア: <span id="score">0</span></div>
+      <div id="gauge"><div id="gaugeFill"></div></div>
+    </div>
+  </div>
+  <div id="frame">
+    <div id="inner-frame"></div>
+    <div id="bonus-msg">✨ スコアボーナス ✨</div>
+  </div>
+  <div id="overlay">
+    <div id="container">
+      <div id="msg">てれやなぶたしゃま<br><span style="font-size: 18px; color: #7a9a96;">～ ちゅーきゅー　にげちゃうぶたしゃまをそっとみまもろう ～</span>
+        <div class="sub-msg">いどう：[W][A][S][D]<br>カメラを向ける：マウス</div>
+      </div>
+      <div class="menu-buttons" id="start-menu">
+        <button class="btn btn-exit" onclick="location.href='index.html'">もどる</button>
+        <button class="btn btn-retry" onclick="startGame()">はじめる</button>
+      </div>
+      <div id="end-menu" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+
+        <div class="input-box">
+          <div class="input-box-title">✨ ランキングに参加しよう ✨</div>
+
+          <div style="margin-bottom: 15px;">
+            <label for="nameInput" class="input-label">ランクイン時のおなまえ</label>
+            <input type="text" id="nameInput" class="name-input" placeholder="なまえをいれてね">
+          </div>
+
+          <input type="hidden" id="scoreInput">
+          <button id="saveBtn">ほぞんしてランキングへ</button>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn-sub btn-home-sub" onclick="location.href='index.html'">タイトルへ</button>
+          <button class="btn-sub btn-retry-sub" onclick="location.reload()">もういちどあそぶ</button>
+        
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { startLoop } from "./js/game-core.js";
+    import { AI } from "./js/ai-logic.js";
+  
+    // Normalモードで開始（AI関数と、目標スコアを指定）
+    startLoop(AI.normal, 25000);
+  </script>
+  <script src="js/handler.js"></script>
+</body>
+</html>
